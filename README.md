@@ -60,3 +60,31 @@ Common troubleshooting
 
 How to retrain
 - Open the notebook `notebooks/Sentiment_Analysis.ipynb`, follow EDA and training cells, and save a new pipeline to `models/best_model.joblib`.
+
+Dataset (IMDB) and recommended workflow
+--------------------------------------
+Dataset source: IMDB Dataset of 50K Movie Reviews on Kaggle: https://www.kaggle.com/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews
+
+Short description:
+- Number of rows: 50,000
+- Columns: typically `review` (text) and `sentiment` (label: `positive` / `negative`).
+
+Key variables:
+- `text` (string) — review text used as model input (the notebook normalizes `review` to `text`).
+- `label` (categorical) — target sentiment class (`positive`/`negative`).
+
+Recommended download method (Kaggle CLI):
+1) Install Kaggle CLI and put your `kaggle.json` (API token) into `%USERPROFILE%\.kaggle\kaggle.json`.
+
+```powershell
+pip install kaggle
+# place kaggle.json in %USERPROFILE%\.kaggle\kaggle.json
+```
+
+2) Download and unzip the dataset into the `data/` folder:
+
+```powershell
+kaggle datasets download -d lakshmi25npathi/imdb-dataset-of-50k-movie-reviews -p data --unzip
+```
+
+The notebook will automatically use `data/IMDB_Dataset.csv` if present. If you keep the dataset locally, consider adding large files to Git LFS or keeping them outside the repository to avoid large commits. If you prefer, the repository can include a small sample file for quick testing (`data/sample_sentiment.csv`).
