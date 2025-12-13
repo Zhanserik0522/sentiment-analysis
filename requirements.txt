@@ -1,0 +1,16 @@
+numpy
+pandas
+scikit-learn
+xgboost
+nltk
+spacy
+matplotlib
+seaborn
+plotly
+wordcloud
+streamlit
+joblib
+jupyter
+tensorflow
+keras
+tqdm
