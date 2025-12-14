@@ -1,0 +1,9 @@
+Cleanup performed on 2025-12-14
+
+Moved the following into cleanup/archived_cleanup_20251214/: scripts/ (full contents)
+Kept a minimal scripts/ with: smoke_test_models.py, train_final_imdb_augmented.py, count_lines_project.py
+
+Moved older models into models/archived/arch_20251214_0455/
+Remaining in models/: model_final_imdb_augmented.joblib, learning_curve_imdb.png
+
+Note: venv/ left intact. To fully remove virtualenv, delete venv/ manually.

@@ -23,6 +23,43 @@ def clean_text(text: str) -> str:
     return ' '.join(tokens)
 
 
+def clean_text_negation(text: str) -> str:
+    """Negation-aware cleaning.
+
+    Converts tokens after a negation word into a negated token (prefix with "not_")
+    until the next punctuation/stop boundary. This is a lightweight heuristic that
+    helps capture constructs like "not good" -> "not_good" so models can learn
+    negated contexts.
+    """
+    if not isinstance(text, str):
+        return ""
+    text = text.lower()
+    text = re.sub(r'http\S+|www\S+', '', text)
+    text = re.sub(r'@\w+', '', text)
+    # replace punctuation with space
+    text = re.sub(r'[^a-z0-9\s]', ' ', text)
+
+    negation_tokens = set(['not', "don't", "didn't", 'never', "no", "can't", "cannot", "won't"])
+    out = []
+    negate = False
+    for t in text.split():
+        if t in negation_tokens:
+            # keep the negation word itself
+            out.append(t)
+            negate = True
+            continue
+        if negate:
+            # attach negation prefix and stop negation after one token to avoid long spans
+            nt = f'not_{t}'
+            if nt not in STOPWORDS:
+                out.append(nt)
+            negate = False
+        else:
+            if t not in STOPWORDS:
+                out.append(t)
+    return ' '.join(out)
+
+
 def load_dataset(path: str) -> pd.DataFrame:
     """Load CSV dataset into a DataFrame."""
     df = pd.read_csv(path)
