@@ -30,7 +30,8 @@ if _HAS_STREAMLIT:
 def load_model_from_path(path: str | None = None):
     """Load a joblib model from path or fallback candidates. Cached to avoid reloads."""
     candidates = [
-        # prefer the augmented final IMDB model
+        # prefer the canonical final model
+        Path('models') / 'model_final.joblib',
         Path('models') / 'model_final_imdb_augmented.joblib',
         Path('models') / 'model_grid_best_calibrated.joblib',
     ]
