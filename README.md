@@ -36,7 +36,8 @@ Run the Streamlit demo
 streamlit run app\app.py
 ```
 
-- If `streamlit` is not recognized after activation, run it with the full path:
+- If `streamlit` is not recognized after 
+activation, run it with the full path:
 
 ```powershell
 .\venv\Scripts\streamlit.exe run app\app.py
@@ -85,16 +86,11 @@ Notes on resources and time
 - For final training (retrain_final), time is proportional to the chosen vectorizer size and estimator; LogisticRegression retrain is usually fast (<5 min), RandomForest may take longer depending on `n_estimators`.
 
 Dataset (IMDB) and recommended workflow
---------------------------------------
 Dataset source: IMDB Dataset of 50K Movie Reviews on Kaggle: https://www.kaggle.com/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews
 
 Short description:
-- Number of rows: 50,000
-- Columns: typically `review` (text) and `sentiment` (label: `positive` / `negative`).
 
 Key variables:
-- `text` (string) — review text used as model input (the notebook normalizes `review` to `text`).
-- `label` (categorical) — target sentiment class (`positive`/`negative`).
 
 Recommended download method (Kaggle CLI):
 1) Install Kaggle CLI and put your `kaggle.json` (API token) into `%USERPROFILE%\.kaggle\kaggle.json`.
@@ -106,7 +102,21 @@ pip install kaggle
 
 2) Download and unzip the dataset into the `data/` folder:
 
-```powershell
+### Final model and how to reproduce
+
+The demo uses `models/model_final_imdb_augmented.joblib` as the default production model. This model was trained on the IMDB dataset and augmented with short positive/negative phrases to improve handling of very short inputs (e.g., "I like it", "like", "hate").
+
+To reproduce the model locally:
+- Place `data/IMDB_Dataset.csv` in the `data/` folder (download from Kaggle as above).
+- Optionally install and use Git LFS for the dataset if you prefer to track it in the repo.
+- Run the training script:
+
+```
+python scripts/train_final_imdb_augmented.py --data data/IMDB_Dataset.csv --out models/model_final_imdb_augmented.joblib
+```
+
+Notes:
+- The repository currently keeps model artifacts under `models/`. Large datasets should be kept outside the repo or tracked with Git LFS to avoid bloating the Git history.
 kaggle datasets download -d lakshmi25npathi/imdb-dataset-of-50k-movie-reviews -p data --unzip
 ```
 
