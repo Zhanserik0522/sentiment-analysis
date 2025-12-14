@@ -1,0 +1,3 @@
+model,cv_score,test_accuracy
+logistic_regression,0.8584210295150587,0.863
+random_forest,0.8493636528465172,0.8485

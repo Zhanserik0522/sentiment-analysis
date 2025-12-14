@@ -1,0 +1,13 @@
+Archived models manifest
+
+Moved on 2025-12-14
+
+Original -> New
+model_binary_best.joblib -> archived_model_binary_best.joblib
+model_final_imdb.joblib -> archived_model_final_imdb.joblib
+model_grid_best.joblib -> archived_model_grid_best.joblib
+model_grid_best_calibrated.joblib -> archived_model_grid_best_calibrated.joblib
+model_multi_quick.joblib -> archived_model_multi_quick.joblib
+model_negation_retrain.joblib -> archived_model_negation_retrain.joblib
+model_quick_retrained.joblib -> archived_model_quick_retrained.joblib
+model_quick_retrained_negation.joblib -> archived_model_quick_retrained_negation.joblib
