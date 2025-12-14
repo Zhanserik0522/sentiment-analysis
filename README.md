@@ -99,70 +99,53 @@ Recommended download method (Kaggle CLI):
 pip install kaggle
 # place kaggle.json in %USERPROFILE%\.kaggle\kaggle.json
 ```
+# Sentiment Analysis — Quick start
 
-2) Download and unzip the dataset into the `data/` folder:
+This repository is a compact sentiment analysis demo. It includes a Streamlit demo, helper scripts, and example training utilities.
 
-### Final model and how to reproduce
+Quick start (Windows PowerShell)
+1) Create and activate a virtual environment and install dependencies:
 
-The demo uses `models/model_final_imdb_augmented.joblib` as the default production model. This model was trained on the IMDB dataset and augmented with short positive/negative phrases to improve handling of very short inputs (e.g., "I like it", "like", "hate").
-
-To reproduce the model locally:
-- Place `data/IMDB_Dataset.csv` in the `data/` folder (download from Kaggle as above).
-- Optionally install and use Git LFS for the dataset if you prefer to track it in the repo.
-- Run the training script:
-
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 ```
+
+2) Run the Streamlit demo:
+
+```powershell
+streamlit run app\app.py
+```
+
+If `streamlit` is not found after activation, run:
+
+```powershell
+.\venv\Scripts\streamlit.exe run app\app.py
+```
+
+Quick test (command-line)
+
+```powershell
+.\venv\Scripts\python.exe scripts\test_predict.py
+```
+
+Where the model is
+- The app loads `models/model_final.joblib` by default (replace it with your own trained model if needed).
+
+Reproduce final training (optional)
+- If you want to retrain the augmented final model, use:
+
+```powershell
 python scripts/train_final_imdb_augmented.py --data data/IMDB_Dataset.csv --out models/model_final_imdb_augmented.joblib
 ```
 
-Notes:
-- The repository currently keeps model artifacts under `models/`. Large datasets should be kept outside the repo or tracked with Git LFS to avoid bloating the Git history.
-kaggle datasets download -d lakshmi25npathi/imdb-dataset-of-50k-movie-reviews -p data --unzip
-```
+Notes
+- Large datasets (IMDB) are not included; put `data/IMDB_Dataset.csv` into `data/` if you plan to retrain.
+- If PowerShell blocks scripts, run PowerShell as Administrator and use `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`.
 
-The notebook will automatically use `data/IMDB_Dataset.csv` if present. If you keep the dataset locally, consider adding large files to Git LFS or keeping them outside the repository to avoid large commits. If you prefer, the repository can include a small sample file for quick testing (`data/sample_sentiment.csv`).
+If you want the README shorter or in Russian, tell me which parts to keep and I will update it.
 
-How to run (safe examples + logging)
-----------------------------------
-
-When running long randomized searches or retrains on Windows, it's safest to run them from PowerShell and redirect output to a timestamped log file. Below are recommended patterns.
-
-1) Quick test run (fast, use sample data):
-
-```powershell
-.\venv\Scripts\python.exe scripts\run_random_search.py --data data/sample_sentiment.csv --sample-size 1000 --out-dir models --n-iter 5 --cv 3 --quick
-```
-
-2) Full run (example): save logs to a file so you can check progress later. Adjust `--n-iter` and `--sample-size` as needed.
-
-```powershell
-$ts = (Get-Date -Format "yyyyMMdd_HHmmss")
-.\venv\Scripts\python.exe scripts\run_random_search.py --data data/IMDB_Dataset.csv --sample-size 50000 --out-dir models\full_search --n-iter 50 --cv 5  *> models\full_search\random_search_${ts}.log
-```
-
-Notes:
-- The `*>` redirection sends both stdout and stderr to the log file in PowerShell.
-- Use `--quick` for a reduced search that completes faster while you iterate on code.
-- If CPU usage is too high, run with fewer jobs by editing `scripts/run_random_search.py` (change `n_jobs` where RandomizedSearchCV is constructed) or set environment variables to limit cores.
-
-3) Restarting a stopped long run
 
 - There is no automatic checkpointing for RandomizedSearchCV in this repo. To safely restart a search:
-	- Reduce `--n-iter` if you only need a smaller candidate set.
-	- Or run a focused RF-only search by modifying `scripts/run_random_search.py` (set n_iter and only construct the RF search block) and save outputs to a different subfolder.
-
-4) Retrain final model on train+val and save artifacts
-
-```powershell
-.\venv\Scripts\python.exe scripts\retrain_final.py --data data/IMDB_Dataset.csv --model models\full_search\best_model_final.joblib --out models\full_search\best_model_final_trained.joblib
-```
-
-5) Inspect logs while running (PowerShell)
-
-```powershell
-# Tail the last 100 lines of the log file
-Get-Content models\full_search\random_search_*.log -Tail 100 -Wait
-```
-
-If you'd like, I can also add a small `scripts/run_rf_only.py` helper that runs just the RandomForest search with safer defaults and logging; say so and I'll add it.
-
