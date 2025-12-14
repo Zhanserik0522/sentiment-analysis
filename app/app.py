@@ -204,102 +204,10 @@ if _HAS_STREAMLIT:
     st.sidebar.write('loaded model path = ' + str(clf_path))
 
 # Show model hash and top features on demand
-def compute_model_info(clf, path_str: str):
-    import hashlib
-    from pathlib import Path
-    info = {}
-    p = Path(path_str) if path_str else None
-    try:
-        if p is not None and p.exists():
-            data = p.read_bytes()
-            info['sha256'] = hashlib.sha256(data).hexdigest()
-            info['size_kb'] = p.stat().st_size // 1024
-        else:
-            info['sha256'] = None
-            info['size_kb'] = None
-    except Exception as e:
-        info['sha256'] = f'error: {e}'
-
-    # attempt to extract vectorizer and classifier
-    try:
-        from sklearn.pipeline import Pipeline
-        vec = None
-        model = None
-        if isinstance(clf, Pipeline):
-            vec = clf.named_steps.get('vectorizer') or clf.steps[0][1]
-            model = clf.named_steps.get('clf') or clf.steps[-1][1]
-        else:
-            # try attributes
-            vec = getattr(clf, 'vectorizer', None)
-            model = getattr(clf, 'clf', clf)
-
-        info['classes'] = getattr(clf, 'classes_', None) or getattr(model, 'classes_', None)
-        # get feature names and coefficients
-        if vec is not None and hasattr(vec, 'get_feature_names_out') and hasattr(model, 'coef_'):
-            fn = vec.get_feature_names_out()
-            coefs = model.coef_
-            # binary
-            if coefs.ndim == 1 or coefs.shape[0] == 1:
-                arr = coefs.ravel()
-                pairs = list(zip(arr, fn))
-                top_pos = sorted(pairs, reverse=True)[:20]
-                top_neg = sorted(pairs)[:20]
-                info['top_pos'] = [(float(c), f) for c, f in top_pos[:10]]
-                info['top_neg'] = [(float(c), f) for c, f in top_neg[:10]]
-                # feature 'hate' coef if present
-                try:
-                    idx = list(fn).index('hate')
-                    info['hate_coef'] = float(arr[idx])
-                except Exception:
-                    info['hate_coef'] = None
-            else:
-                # multiclass: show top features per class
-                info['top_per_class'] = {}
-                for i, cls in enumerate(model.classes_):
-                    arr = coefs[i]
-                    pairs = list(zip(arr, fn))
-                    info['top_per_class'][str(cls)] = {
-                        'top_pos': [(float(c), f) for c, f in sorted(pairs, reverse=True)[:10]],
-                        'top_neg': [(float(c), f) for c, f in sorted(pairs)[:10]]
-                    }
-        else:
-            info['top_pos'] = None
-            info['top_neg'] = None
-    except Exception as e:
-        info['error'] = str(e)
-
-    return info
+# compute_model_info removed per user request; model metadata display was deleted.
 
 
-if _HAS_STREAMLIT:
-    if st.sidebar.button('Show model info'):
-        if clf is None or clf_path is None:
-            st.sidebar.warning('No model loaded')
-        else:
-            # cache in session_state
-            key = f"model_info:{clf_path}"
-            if key not in st.session_state:
-                st.session_state[key] = compute_model_info(clf, clf_path)
-            mi = st.session_state[key]
-            st.sidebar.markdown('**Model checksum & top features**')
-            st.sidebar.write('sha256: ' + str(mi.get('sha256')))
-            st.sidebar.write('size_kb: ' + str(mi.get('size_kb')))
-            st.sidebar.write('classes: ' + str(mi.get('classes')))
-            if mi.get('hate_coef') is not None:
-                st.sidebar.write(f"coef('hate') = {mi.get('hate_coef')}")
-            if mi.get('top_pos'):
-                st.sidebar.write('Top positive features:')
-                for c, f in mi['top_pos']:
-                    st.sidebar.write(f"{f}: {c:.3f}")
-            if mi.get('top_neg'):
-                st.sidebar.write('Top negative features:')
-                for c, f in mi['top_neg']:
-                    st.sidebar.write(f"{f}: {c:.3f}")
-            if mi.get('top_per_class'):
-                for cls, d in mi['top_per_class'].items():
-                    st.sidebar.write(f'Class {cls} top pos:')
-                    for c, f in d['top_pos']:
-                        st.sidebar.write(f"{f}: {c:.3f}")
+# Sidebar model-info button and display removed per user request.
 
 def _cli_predict_loop(clf, clf_path):
     """Simple CLI loop to allow using the sentiment model when Streamlit is
